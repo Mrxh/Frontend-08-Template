@@ -1,0 +1,367 @@
+<html>
+<head>
+<title>fiveChess</title>
+<style>
+    html,body{
+        margin: 0;
+        padding: 0;
+    }
+    #board{
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+    .cell{
+        width: 50px;
+        height: 50px;
+        display: inline-block;
+        vertical-align: middle;
+        border: 1px solid #fff;
+        background-color: green;
+    }
+</style>
+</head>
+<body>
+    <canvas id="board" width="1200" height="1200" style="width: 1200px;height: 1200px;">
+    </canvas>
+<script>
+    let pattern = [
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    ]
+    
+    let color = 1
+    let isEnd = false
+
+    let c=document.getElementById("board");
+    let ctx=c.getContext("2d");
+
+    let count = 0
+    let allWin = []
+
+    let userWin = []
+    let compWin = []
+    
+    function loadChess(){
+        for(let i=0;i<20;i++){
+            allWin[i] = []
+            for(let j=0;j<20;j++){
+                allWin[i][j] = []
+            }
+        }
+
+        for(let i=0;i<20;i++){
+            for(let j=0;j<16;j++){
+                for(let k=0;k<5;k++){
+                    allWin[j+k][i][count] = true
+                }
+                count++
+            }
+        }
+
+        for(let i=0;i<20;i++){
+            for(let j=0;j<16;j++){
+                for(let k=0;k<5;k++){
+                    allWin[i][j+k][count] = true
+                }
+                count++
+            }
+        }
+
+        for(let i=0;i<16;i++){
+            for(let j=0;j<16;j++){
+                for(let k=0;k<5;k++){
+                    allWin[i+k][j+k][count] = true
+                }
+                count++
+            }
+        }
+
+        for(let i=19;i>3;i--){
+            for(let j=0;j<16;j++){
+                for(let k=0;k<5;k++){
+                    allWin[i-k][j+k][count] = true
+                }
+                count++
+            }
+        }
+        
+        for(var i =0; i <count; i++){
+            userWin[i] = 0
+            compWin[i] = 0
+        }
+    }
+
+
+    function show(){
+        ctx.fillStyle="#3498db";
+        ctx.fillRect(0,0,1031,1031);
+        ctx.strokeStyle = "#000"
+        ctx.strokeRect(40,40,951,951);
+        for(let i=1;i<19;i++){
+            ctx.moveTo(40,41+i*50)
+            ctx.lineTo(991,41+i*50)
+            ctx.stroke()
+            ctx.moveTo(41+i*50,41)
+            ctx.lineTo(41+i*50,991)
+            ctx.stroke()
+        }
+        for(let i=0;i<20;i++){
+            for(let j=0;j<20;j++){
+                ctx.beginPath()
+                ctx.fillStyle = pattern[i*20+j]===1?'#000':'#fff'
+                if(pattern[i*20+j]===1){
+                    ctx.arc(41+j*50,41+i*50,20,0,2*Math.PI)
+                    ctx.fill()
+                }
+                if(pattern[i*20+j]===2){
+                    ctx.arc(41+j*50,41+i*50,20,0,2*Math.PI)
+                    ctx.fill()
+                }
+                ctx.closePath()
+            }
+        }
+    }
+
+    c.addEventListener('click',e=>userMove(e))
+
+    function userMove(e){
+        let x = Math.round((e.pageX-41)/50)
+        let y = Math.round((e.pageY-41)/50)
+        if(x<20 && x>=0 && y<20 && y>=0 && !pattern[y*20+x] && !isEnd){
+            for(let k=0;k<count;k++){
+                if(allWin[x][y][k]){
+                    userWin[k]++
+                    compWin[k] = 6
+                }
+            }
+            pattern[y*20+x] = color
+            if(check(pattern,color)){
+                isEnd = true
+                alert(color === 1?'黑棋获胜':'白棋获胜')
+            }
+            color = 3-color
+            show()
+            computerMove()
+            // if(WillWin(pattern,color)){
+            //     alert(color === 1?'黑棋将获胜':'白棋将获胜')
+            // }
+        }
+    }
+
+    function computerMove(){
+        if(!isEnd){
+            let point = bestChoice(pattern)
+            if(point){
+                for(let k=0;k<count;k++){
+                    if(allWin[point[0]][point[1]][k]){
+                        compWin[k]++
+                        userWin[k] = 6
+                    }
+                }
+                pattern[point[1]*20+point[0]] = color
+            }
+                
+            if(check(pattern,color)){
+                isEnd = true
+                alert(color === 1?'黑棋获胜':'白棋获胜')
+            }
+            color = 3-color
+            show()
+        }
+    }
+
+    function check(pattern,color){
+        for(let i=0;i<20;i++){
+            let winNum = 0
+            for(let j=0;j<20;j++){
+                if(pattern[i*20+j]!==color && winNum!=5){
+                    winNum=0
+                }
+                if(pattern[i*20+j]===color){
+                    winNum+=1
+                }
+                if(winNum === 5)
+                    break
+            }
+            if(winNum===5)
+                return winNum
+        }
+
+        for(let i=0;i<20;i++){
+            let winNum = 0
+            for(let j=0;j<20;j++){
+                if(pattern[j*20+i]!==color && winNum!=5){
+                    winNum=0
+                }
+                if(pattern[j*20+i]===color){
+                    winNum+=1
+                }
+                if(winNum === 5)
+                    break
+            }
+            if(winNum===5)
+                return winNum
+        }
+        {
+            let winNum = 0
+            outer:for(let i=5;i<22;i++){
+                for(let j=0;j<i;j++){
+                    if(pattern[j*20+(21-i+j)]!==color && winNum!=5){
+                        winNum = 0
+                    }
+                    if(pattern[j*20+(21-i+j)]===color){
+                        winNum +=1
+                    }
+                    if(winNum === 5)
+                        break outer
+                }
+            }
+            outer1:for(let i=5;i<21;i++){
+                for(let j=0;j<i;j++){
+                    if(pattern[j+(21-i+j)*20]!==color && winNum!=5){
+                        winNum = 0
+                    }
+                    if(pattern[j+(21-i+j)*20]===color){
+                        winNum +=1
+                    }
+                    if(winNum === 5)
+                        break outer1
+                }
+            }
+            if(winNum===5)
+                return winNum
+        }
+        {
+            let winNum = 0
+            outer:for(let i=5;i<22;i++){
+                for(let j=0;j<i;j++){
+                    if(pattern[j+(i-j-1)*20]!==color && winNum!=5){
+                        winNum = 0
+                    }
+                    if(pattern[j+(i-j-1)*20]===color){
+                        winNum +=1
+                    }
+                    if(winNum === 5)
+                        break outer
+                }
+            }
+            outer1:for(let i=5;i<21;i++){
+                for(let j=0;j<i;j++){
+                    if(pattern[(20-j)*20+(21-i+j)]!==color && winNum!=5){
+                        winNum = 0
+                    }
+                    if(pattern[(20-j)*20+(21-i+j)]===color){
+                        winNum +=1
+                    }
+                    if(winNum === 5)
+                        break outer1
+                }
+            }
+            if(winNum===5)
+                return winNum
+        }
+    }
+
+    function clone(pattern){
+        return Object.create(pattern)
+    }
+
+    function WillWin(pattern,color){
+        for(let i=0;i<20;i++){
+            for(let j=0;j<20;j++){
+                if(pattern[i*20+j])
+                    continue
+                let tmp = clone(pattern)
+                tmp[i*20+j] = color
+                if(check(tmp,color)){
+                    return [j,i]
+                }
+            }
+        }
+        return null
+    }
+
+    function bestChoice(pattern){
+        let userScore = []
+        let compScore = []
+        for(let i =0; i <20; i++){
+            userScore[i] = []
+            compScore[i] = []
+            for(let j =0; j <20; j++){
+                userScore[i][j] = 0
+                compScore[i][j] = 0
+            }
+        }
+
+        let max = 0
+        let maxX = 0
+        let maxY = 0
+
+
+        for(let i =0; i < 20; i++){
+            for(let j =0; j < 20; j++){
+                if(pattern[j*20+i] === 0){
+                    for(let k=0; k <count; k++){
+                        if(allWin[i][j][k]){
+                                if(userWin[k] == 1){
+                                    userScore[i][j] += 200
+                                }else if(userWin[k] == 2){
+                                    userScore[i][j] += 500
+                                }else if(userWin[k] == 3){
+                                    userScore[i][j] += 2000
+                                }else if(userWin[k] == 4){
+                                    userScore[i][j] += 50000
+                                }
+                                if(compWin[k] == 1){
+                                    compScore[i][j] += 300
+                                }else if(compWin[k] == 2){
+                                    compScore[i][j] += 800
+                                }else if(compWin[k] == 3){
+                                    compScore[i][j] += 20000
+                                }else if(compWin[k] == 4){
+                                    compScore[i][j] += 500000
+                                }
+                        }
+                    }
+
+                    if(userScore[i][j] > max){
+                        max = userScore[i][j]
+                        maxX = i
+                        maxY = j
+                    }
+                    if(compScore[i][j] > max){
+                        max = compScore[i][j]
+                        maxX = i
+                        maxY = j
+                    }
+                }
+            }
+        }
+
+        return [maxX,maxY]
+    }
+    
+    loadChess()
+    show()
+</script>
+</body>
+</html>
