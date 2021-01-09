@@ -145,7 +145,37 @@
         return MultiplicativeExpression(source)
     }
 
-    console.log(Expression(source))
+    function calculate(data){
+        if(data.type === 'Expression'){
+            return calculate(data.children[0])
+        }
+        if(data.type === 'AdditiveExpression'){
+            if(data.operator === '+'){
+                return calculate(data.children[0]) + calculate(data.children[2])
+            }
+            if(data.operator === '-'){
+                return calculate(data.children[0]) - calculate(data.children[2])
+            }
+            return calculate(data.children[0])
+        }
+        if(data.type === 'MultiplicativeExpression'){
+            if(data.operator === '*'){
+                return calculate(data.children[0]) * calculate(data.children[2])
+            }
+            if(data.operator === '/'){
+                return calculate(data.children[0]) / calculate(data.children[2])
+            }
+            return calculate(data.children[0])
+        }
+
+        if(data.type === 'Number'){
+            return Number(data.value)
+        }
+    }
+    
+    const expression = Expression(source)
+    console.log(expression)
+    console.log(calculate(expression))
 </script>
 </body>
 </html>
