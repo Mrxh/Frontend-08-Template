@@ -1,24 +1,37 @@
 <html>
 <head>
-<title>reactive 监听函数优化</title>
+<title>reactive 双向绑定</title>
 </head>
 <body>
+    <input id="r" type="range" min="0" max="255">
+    <input id="g" type="range" min="0" max="255">
+    <input id="b" type="range" min="0" max="255">
+    <div id="color" style="width: 100px;height: 100px;"></div>
 <script>
     let callbacks = new Map();
-    // 缓存proxy代理
-    let reactivties = new Map();
     let usedReactivties = [];
     let object = {
-        a:{b:22},
-        b:'aa'
+        r: 0,
+        g: 0,
+        b: 0
     }
 
     // 创建proxy代理对象对目标对象进行监听
     let proxy = reactive(object)
 
     effect(()=>{
-        console.log(proxy.a.b)
+        // input 赋值
+        document.getElementById('r').value = proxy.r
+        document.getElementById('g').value = proxy.g
+        document.getElementById('b').value = proxy.b
+        
+        // 改变color值
+        document.getElementById('color').style.backgroundColor = `rgb(${proxy.r},${proxy.g},${proxy.b})`
     })
+
+    document.getElementById('r').addEventListener('input',e=>proxy.r = e.target.value)
+    document.getElementById('g').addEventListener('input',e=>proxy.g = e.target.value)
+    document.getElementById('b').addEventListener('input',e=>proxy.b = e.target.value)
 
     // 属性监听函数
     function effect(callback){
@@ -42,10 +55,7 @@
     }
 
     function reactive(object){
-        // 已存在，返回对应proxy
-        if(reactivties.has(object))
-            return reactivties.get(object)
-        let proxy = new Proxy(object,{
+        return new Proxy(object,{
             // config 配置设置
             // setter
             set(obj,prop,val){
@@ -62,18 +72,9 @@
             get(obj,prop){
                 // 监听引用的属性追加到usedReactivties中
                 usedReactivties.push([obj,prop])
-                // 判断为对象进入下一级
-                if(typeof obj[prop] === 'object')
-                    return reactive(obj[prop])
-
                 return obj[prop]
             }
         })
-
-        // 保存新建proxy
-        reactivties.set(object,proxy)
-
-        return proxy
     }
 </script>
 </body>
