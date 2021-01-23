@@ -1,0 +1,66 @@
+<html>
+<head>
+<title>reactive 监听函数优化</title>
+</head>
+<body>
+<script>
+    let callbacks = new Map();
+    let usedReactivties = [];
+    let object = {
+        a:22,
+        b:'aa'
+    }
+
+    // 创建proxy代理对象对目标对象进行监听
+    let proxy = reactive(object)
+
+    effect(()=>{
+        console.log(proxy.a)
+    })
+
+    // 属性监听函数
+    function effect(callback){
+        usedReactivties = []
+        callback()
+        console.log(usedReactivties)
+
+        // 将监听函数追加到对应监听集合当中
+        for(let reactivity of usedReactivties){
+            // 第一层
+            if(!callbacks.has(reactivity[0])){
+                callbacks.set(reactivity[0],new Map())
+            }
+            // 第二层
+            if(!callbacks.get(reactivity[0]).has(reactivity[1])){
+                callbacks.get(reactivity[0]).set(reactivity[1],[])
+            }
+            // 存入监听函数
+            callbacks.get(reactivity[0]).get(reactivity[1]).push(callback)
+        }
+    }
+
+    function reactive(object){
+        return new Proxy(object,{
+            // config 配置设置
+            // setter
+            set(obj,prop,val){
+                obj[prop] = val;
+                if(callbacks.get(obj))
+                    if(callbacks.get(obj).get(prop))
+                        for(let callback of callbacks.get(obj).get(prop)){
+                            callback()
+                        }
+                console.log(obj,prop,val)
+                return obj[prop]
+            },
+            // getter
+            get(obj,prop){
+                // 监听引用的属性追加到usedReactivties中
+                usedReactivties.push([obj,prop])
+                return obj[prop]
+            }
+        })
+    }
+</script>
+</body>
+</html>

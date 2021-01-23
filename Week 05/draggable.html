@@ -1,0 +1,34 @@
+<html>
+<head>
+<title>reactive 拖拽</title>
+</head>
+<body>
+    <div id="draggable" style="width: 100px;height: 100px;background-color: #2177c7;"></div>
+<script>
+    let draggable = document.getElementById('draggable');
+    let baseX = 0,baseY = 0; // 每次改变后的坐标
+    // 绑定鼠标按下事件
+    document.addEventListener('mousedown',e =>{
+        let startX = e.clientX,startY = e.clientY
+
+        let up = e =>{
+            // 每次拖拽结束重设坐标
+            baseX = baseX + e.clientX - startX
+            baseY = baseY + e.clientY - startY
+            // 每次拖拽结束去掉事件
+            document.removeEventListener('mousemove',move)
+            document.removeEventListener('mouseup',up)
+        }
+
+        let move = e =>{
+            // 修改目标坐标
+            draggable.style.transform = `translate(${baseX + e.clientX - startX}px,${baseY + e.clientY - startY}px)`
+        }
+        // 绑定鼠标移动事件
+        document.addEventListener('mousemove',move)
+        // 绑定鼠标抬起事件
+        document.addEventListener('mouseup',up)
+    })
+</script>
+</body>
+</html>

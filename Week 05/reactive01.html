@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>reactive 监听函数</title>
+</head>
+<body>
+<script>
+    let callbacks = []
+    let object = {
+        a:22,
+        b:'aa'
+    }
+
+    // 创建proxy代理对象对目标对象进行监听
+    let proxy = reactive(object)
+
+    effect(()=>{
+        console.log(proxy.a)
+    })
+
+    // 属性监听函数
+    function effect(callback){
+        callbacks.push(callback)
+    }
+
+    function reactive(object){
+        return new Proxy(object,{
+            // config 配置设置
+            // setter
+            set(obj,prop,val){
+                obj[prop] = val;
+                // 遍历监听函数
+                for(callback of callbacks){
+                    callback()
+                }
+                console.log(obj,prop,val)
+                return obj[prop]
+            },
+            // getter
+            get(obj,prop){
+                console.log('获取'+prop+':'+obj[prop])
+                return obj[prop]
+            }
+        })
+    }
+</script>
+</body>
+</html>
