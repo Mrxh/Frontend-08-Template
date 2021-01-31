@@ -1,0 +1,21 @@
+<html>
+<head>
+<title>UTF Encoding</title>
+</head>
+<body>
+    
+<script>
+    function UTF_Encoding(string){
+        let res = []
+        for(let i=0;i<string.length;i++){
+            let binary = string[i].charCodeAt().toString(2)
+            res.push(binary)
+        }
+        return res
+    }
+
+    let str = 'hello world'
+    console.log(UTF_Encoding(str))
+</script>
+</body>
+</html>

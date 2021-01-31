@@ -1,0 +1,32 @@
+<html>
+<head>
+<title>面向对象</title>
+</head>
+<body>
+    
+<script>
+    class Dog{
+        bite(human){
+            return true
+        }
+    }
+
+    class Human{
+        constructor(name){
+            this.name = name
+            this.isHurt = false
+        }
+        hurt(isHurt){
+            if(isHurt){
+                console.log(this.name+'被咬伤了')
+            }
+            this.isHurt = isHurt
+        }
+    }
+
+    let person1 = new Human('小明')
+    let dog = new Dog(person1)
+    person1.hurt(dog.bite(person1))
+</script>
+</body>
+</html>
