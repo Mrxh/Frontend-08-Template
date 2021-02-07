@@ -1,0 +1,92 @@
+<html>
+<head>
+<title>练习一</title>
+</head>
+<body>
+<div id="container"></div>
+<script src="https://gw.alipayobjects.com/os/lib/antv/g6/4.1.7/dist/g6.min.js"></script>   
+<script>
+      function renderG6(data) {
+        const treeGraph = new G6.TreeGraph({
+          container: "container",
+          width: document.documentElement.clientWidth-20,
+          height: document.documentElement.clientHeight-20,
+          modes: {
+            default: [
+              {
+                type:"collapse-expand",
+                onChange: function onChange(item, collapsed) {
+                    const data = item.get('model');
+                    data.collapsed = collapsed;
+                    return true;
+                }
+              },
+              "drag-canvas",
+              "zoom-canvas",
+            ],
+          },
+          defaultNode:{
+            size:26
+          },
+          defaultEdge: {
+            type: 'cubic-horizontal',
+          },
+          layout: {
+            type: 'dendrogram',
+            direction: 'LR',
+            nodeSep: 20,
+            rankSep: 100,
+            radial: true
+          },
+        });
+        treeGraph.data(data); 
+        treeGraph.render(); 
+        treeGraph.fitView();
+      }
+
+    function getObject(){
+        const names = Object.getOwnPropertyNames(window)
+        const map = new Map()
+        for(let name of names){
+            if(window[name] && window[name].prototype){
+                const proto = window[name].prototype.__proto__
+                if(proto){
+                    if(!map.has(proto)){
+                        map.set(proto,[])
+                    }
+
+                    if(!map.get(proto).includes(window[name])){
+                        map.get(proto).push(window[name])
+                    }
+                }
+            }
+        }
+        console.log(map)
+        function getChildren(obj){
+            if(map.has(obj)){
+                return map.get(obj).map(o=>{
+                    return {
+                            id:o.name,
+                            label:o.name,
+                            children:getChildren(o.prototype)
+                        }
+                }).filter(o=>o.id)
+            }else{
+                leaf++
+            }
+            return []
+        }
+
+        return {
+            id: 'Object',
+            label: 'Object',
+            children: getChildren(Object.prototype)
+        }
+    }
+    
+    let leaf = 0
+    const data = getObject()
+    renderG6(data)
+</script>
+</body>
+</html>
