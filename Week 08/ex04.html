@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>状态机</title>
+</head>
+<body>
+<script>
+    let repeatA = false
+    function match(string){
+        let state = start
+        for(let str of string){
+            state = state(str)
+        }
+        return state === end
+    }
+
+    function start(c){
+        if(c === 'a')
+            return foundA
+        else
+            return start
+    }
+
+    function end(c){
+        return end
+    }
+
+    function foundA(c){
+        if(c === 'b')
+            return foundB
+        else
+            return start(c)
+    }
+
+    function foundB(c){
+        if(repeatA && c === 'x'){
+            return end
+        }else if(c === 'c'){
+            repeatA = true
+            return start
+        }else
+            return start(c)
+    }
+
+    console.log(match('ababcabxdfgdf'))
+</script>
+</body>
+</html>

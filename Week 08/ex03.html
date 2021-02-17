@@ -1,0 +1,48 @@
+<html>
+<head>
+<title>练习三</title>
+</head>
+<body>
+<script>
+    function find(str,tar){
+        for(let i =0;i<str.length;i++){
+            if(str.slice(i,i+tar.length) === tar)
+                return true
+        }
+        return false
+    }
+
+    function match(string){
+        let foundA = false
+        let foundB = false
+        let foundC = false
+        let foundD = false
+        let foundE = false
+        for(let str of string){
+            if(str === 'a'){
+                foundA = true
+            }else if(foundA && str === 'b'){
+                foundB = true
+            }else if(foundB && str === 'c'){
+                foundC = true
+            }else if(foundC && str === 'd'){
+                foundD = true
+            }else if(foundD && str === 'e'){
+                foundE = true
+            }else if(foundE && str === 'f'){
+                return true
+            }else{
+                foundA = false
+                foundB = false
+                foundC = false
+                foundD = false
+                foundE = false
+            }
+        }
+        return false
+    }
+
+    console.log(find('dfgerrabcdefwtg','abcdef'),match('dfgerrabcdefwtg'))
+</script>
+</body>
+</html>
