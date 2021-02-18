@@ -1,4 +1,5 @@
-const net = require('net')
+const net = require('net');
+
 class Request{
     constructor(options){
         this.method = options.method || 'GET';
@@ -22,7 +23,7 @@ class Request{
 
     send(connection){
         return new Promise((resolve,reject)=>{
-            let parser = new ResponseParser()
+            let parser = new ResponseParser;
             if(connection){
                 connection.write(this.toString())
             }else{
@@ -50,7 +51,10 @@ class Request{
     }
     
     toString(){
-        return `${this.method} ${this.path} HTTP/1.1\r\n${Object.keys(this.headers).map(key=>`${key}: ${this.headers[key]}`).join('\r\n')}\r\n${this.bodyText}`
+        return `${this.method} ${this.path} HTTP/1.1\r
+${Object.keys(this.headers).map(key=>`${key}: ${this.headers[key]}`).join('\r\n')}\r
+\r
+${this.bodyText}`
     }
 }
 
@@ -71,7 +75,7 @@ void async function(){
     let request = new Request({
         method: 'POST',
         host: '127.0.0.1',
-        port: '8080',
+        port: '8088',
         path: '/',
         headers:{
             ['x-Foo2']: 'customed'
@@ -81,7 +85,7 @@ void async function(){
         }
     })
 
-    let response = request.send()
+    let response = await request.send()
     
     console.log(response)
 }();

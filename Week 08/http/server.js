@@ -5,12 +5,13 @@ http.createServer((req,res)=>{
     req.on('error',err=>{
         console.error(err)
     }).on('data',chunk=>{
-        body.push(chunk.toString())
+        body.push(chunk)
     }).on('end',()=>{
         body = Buffer.concat(body).toString()
-        res.writeHead(200,{'Content-Type':'text/plain'})
+        console.log('body:',body)
+        res.writeHead(200,{'Content-Type':'text/html'})
         res.end('hello world')
     })
-}).listen(8080)
+}).listen(8088)
 
 console.log('server start')

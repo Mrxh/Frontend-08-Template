@@ -45,7 +45,7 @@ void async function(){
     let request = new Request({
         method: 'POST',
         host: '127.0.0.1',
-        port: '8080',
+        port: '8082',
         path: '/',
         headers:{
             ['x-Foo2']: 'customed'
@@ -55,7 +55,7 @@ void async function(){
         }
     })
 
-    let response = request.send()
+    let response = await request.send()
     
     console.log(response)
 }();
