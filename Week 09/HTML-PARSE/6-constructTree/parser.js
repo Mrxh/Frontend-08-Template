@@ -177,7 +177,7 @@ function singleQuotedAttributeValue(c){
 
     }else{
         currentAttribute.value += c;
-        return singleQuotedAttributeValue;
+        return doubleQuotedAttributeValue;
     }
 }
 
@@ -247,6 +247,7 @@ function afterAttributeName(c){
 function selfClosingStartTag(c){
     if(c === '>'){
         currentToken.isSelfClosing = true;
+        emit(currentToken)
         return data;
     }else if(c==='EOF'){
 

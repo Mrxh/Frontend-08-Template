@@ -21,10 +21,20 @@ function match(element,selector){
         let attr = element.attributes.filter(attr=>attr.name==="id")[0];
         if(attr && attr.value === selector.replace("#", ''))
             return true;
-    }else if(selector.charAt(0) == "#"){
-        let attr = element.attributes.filter(attr=>attr.name==="class")[0];
-        if(attr && attr.value === selector.replace(".", ''))
+    }else if(selector.charAt(0) == "."){
+        const classAttr = element.attributes.filter(
+        (attr) => attr.name === "class"
+        );
+        if (!classAttr || classAttr.length === 0) {
+        return false;
+        }
+
+        const classArray = classAttr[0].value.split(" ");
+        for (let i = 0; i < classArray.length; i++) {
+            if (classArray[i] === selector.replace(".", "")) {
             return true;
+            }
+        }
     }else{
         if(element.tagName === selector){
             return true;
@@ -251,6 +261,29 @@ function attributeName(c){
     }
 }
 
+function afterAttributeName(c){
+    if(c.match(/^[\t\n\f ]$/)){
+        return afterAttributeName;
+    }else if(c === "/"){
+        return selfClosingStartTag;
+    }else if(c === "="){
+        return beforeAttributeValue;
+    }else if(c === ">"){
+        currentToken[currentAttribute.name] = currentAttribute.value;
+        emit(currentToken);
+        return data;
+    }else if(c == EOF){
+
+    }else{
+        currentToken[currentAttribute.name] = currentAttribute.value;
+        currentAttribute = {
+            name:"",
+            value:""
+        }
+        return attributeName(c);
+    }
+}
+
 function beforeAttributeValue(c){
     if(c.match(/^[\t\n\f ]$/) || c==='/' || c === '>' || c==EOF){
         return beforeAttributeValue;
@@ -289,7 +322,7 @@ function singleQuotedAttributeValue(c){
 
     }else{
         currentAttribute.value += c;
-        return singleQuotedAttributeValue;
+        return doubleQuotedAttributeValue;
     }
 }
 
@@ -333,32 +366,10 @@ function UnquotedAttributeValue(c){
     }
 }
 
-function afterAttributeName(c){
-    if(c.match(/^[\t\n\f ]$/)){
-        return afterAttributeName;
-    }else if(c === "/"){
-        return selfClosingStartTag;
-    }else if(c === "="){
-        return beforeAttributeValue;
-    }else if(c === ">"){
-        currentToken[currentAttribute.name] = currentAttribute.value;
-        emit(currentToken);
-        return data;
-    }else if(c == EOF){
-
-    }else{
-        currentToken[currentAttribute.name] = currentAttribute.value;
-        currentAttribute = {
-            name:"",
-            value:""
-        }
-        return attributeName(c);
-    }
-}
-
 function selfClosingStartTag(c){
     if(c === '>'){
         currentToken.isSelfClosing = true;
+        emit(currentToken)
         return data;
     }else if(c==='EOF'){
 
