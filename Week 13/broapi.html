@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浏览器api</title>
+</head>
+<body>
+    <script>
+        let names = Object.getOwnPropertyNames(window);
+        
+        console.log('window:',names);
+
+        // 过滤指定类型
+        function filterOut(names,props){
+            let set = new Set();
+            props.forEach(o=>set.add(o));
+            return names.filter(e=>!set.has(e));
+        }
+
+        // ECMA 262
+        {
+            let js = new Set();
+            let objects = ["console","AggregateError","Array","ArrayBuffer","AsyncFunction","Atomics","BigInt","BigInt64Array","BigUint64Array","Boolean","DataView","Date","decodeURI","decodeURIComponent","encodeURI","encodeURIComponent","Error","escape","eval","EvalError","FinalizationRegistry","Float32Array","Float64Array","Function","Generator","GeneratorFunction","globalThis","Infinity","Int16Array","Int32Array","Int8Array","InternalError","Intl","isFinite","isNaN","JSON","Map","Math","NaN","null","Number","Object","parseFloat","parseInt","Promise","Proxy","RangeError","ReferenceError","Reflect","RegExp","Set","SharedArrayBuffer","String","Symbol","SyntaxError","TypedArray","TypeError","Uint16Array","Uint32Array","Uint8Array","Uint8ClampedArray","undefined","unescape","uneval","URIError","WeakMap","WeakRef","WeakSet","WebAssembly"]
+            objects.forEach(o=>js.add(o));
+            names = names.filter(e=>!js.has(e));
+        }
+
+        // Subclass of Node
+        names = names.filter(e=>{
+            try {
+                return !(window[e].prototype instanceof Node)
+            } catch (error) {
+                return true;
+            }
+        }).filter(e=>e!="Node");
+
+        // events
+        names = names.filter(e=>!e.match(/^on/));
+
+        // webkit private
+        names = names.filter(e=>!e.match(/^webkit/));
+
+        // https://html.spec.whatwg.org/#window
+        {
+            let js = new Set();
+            let objects = ["AggregateError","Array","ArrayBuffer","AsyncFunction","Atomics","BigInt","BigInt64Array","BigUint64Array","Boolean","DataView","Date","decodeURI","decodeURIComponent","encodeURI","encodeURIComponent","Error","escape","eval","EvalError","FinalizationRegistry","Float32Array","Float64Array","Function","Generator","GeneratorFunction","globalThis","Infinity","Int16Array","Int32Array","Int8Array","InternalError","Intl","isFinite","isNaN","JSON","Map","Math","NaN","null","Number","Object","parseFloat","parseInt","Promise","Proxy","RangeError","ReferenceError","Reflect","RegExp","Set","SharedArrayBuffer","String","Symbol","SyntaxError","TypedArray","TypeError","Uint16Array","Uint32Array","Uint8Array","Uint8ClampedArray","undefined","unescape","uneval","URIError","WeakMap","WeakRef","WeakSet","WebAssembly"]
+            objects.forEach(o=>js.add(o));
+            names = names.filter(e=>!js.has(e));
+
+            names = names.filter(e=>{
+                try {
+                    return !(window[e].prototype instanceof Node)
+                } catch (error) {
+                    return true;
+                }
+            }).filter(e=>e!="Node");
+
+            let windowprops = new Set();
+            objects = ["window","self","document","name","location","menubar","personalbar","scrollbars","statusbar","toolbar"];
+            objects.forEach(o=>windowprops.add(o));
+            names = names.filter(e=>!windowprops.has(e));
+        }
+
+        {
+            let interfaces = new Set();
+            objects = ["applicationCache","ApplicationCacheErrorEvent","AnalyserNode","AudioTrack","AudioTrackList","BarProp","BeforeUnloadEvent","BroadcastChannel","CanvasGradient","CanvasPattern","CanvasRenderingContext2D","CloseEvent","CustomElementRegistry","DOMParser","DOMStringList","DOMStringMap","DataTransfer","DataTransferItem","DataTransferItemList","DedicatedWorkerGlobalScope","Document 1 1","DragEvent","ElementInternals","ErrorEvent","EventSource","External","FormDataEvent","HTMLAllCollection","HTMLAnchorElement","HTMLAreaElement","HTMLAudioElement","HTMLBRElement","HTMLBaseElement","HTMLBodyElement","HTMLButtonElement","HTMLCanvasElement","HTMLDListElement","HTMLDataElement","HTMLDataListElement","HTMLDetailsElement","HTMLDialogElement","HTMLDirectoryElement","HTMLDivElement","HTMLElement","HTMLEmbedElement","HTMLFieldSetElement","HTMLFontElement","HTMLFormControlsCollection","HTMLFormElement","HTMLFrameElement","HTMLFrameSetElement","HTMLHRElement","HTMLHeadElement","HTMLHeadingElement","HTMLHtmlElement","HTMLIFrameElement","HTMLImageElement","HTMLInputElement","HTMLLIElement","HTMLLabelElement","HTMLLegendElement","HTMLLinkElement","HTMLMapElement","HTMLMarqueeElement","HTMLMediaElement","HTMLMenuElement","HTMLMetaElement","HTMLMeterElement","HTMLModElement","HTMLOListElement","HTMLObjectElement","HTMLOptGroupElement","HTMLOptionElement","HTMLOptionsCollection","HTMLOutputElement","HTMLParagraphElement","HTMLParamElement","HTMLPictureElement","HTMLPreElement","HTMLProgressElement","HTMLQuoteElement","HTMLScriptElement","HTMLSelectElement","HTMLSlotElement","HTMLSourceElement","HTMLSpanElement","HTMLStyleElement","HTMLTableCaptionElement","HTMLTableCellElement","HTMLTableColElement","HTMLTableElement","HTMLTableRowElement","HTMLTableSectionElement","HTMLTemplateElement","HTMLTextAreaElement","HTMLTimeElement","HTMLTitleElement","HTMLTrackElement","HTMLUListElement","HTMLUnknownElement","HTMLVideoElement","HashChangeEvent","History","ImageBitmap","ImageBitmapRenderingContext","ImageData","Location","MediaError","MessageChannel","MessageEvent","MessagePort","MimeType","MimeTypeArray","Navigator","OffscreenCanvas","OffscreenCanvasRenderingContext2D","PageTransitionEvent","Path2D","Plugin","PluginArray","PopStateEvent","PromiseRejectionEvent","RadioNodeList","SharedWorker","SharedWorkerGlobalScope","Storage","StorageEvent","SubmitEvent","TextMetrics","TextTrack","TextTrackCue","TextTrackCueList","TextTrackList","TimeRanges","TrackEvent","ValidityState","VideoTrack","VideoTrackList","WebSocket","Window","Worker","WorkerGlobalScope","WorkerLocation","WorkerNavigator","Worklet","WorkletGlobalScope"];
+            objects.forEach(o=>interfaces.add(o));
+            names = names.filter(e=>!interfaces.has(e));
+        }
+
+        names = names.filter(e=>e!="Intl");
+         
+        // https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15
+        names = filterOut(names,["WebGL2ComputeRenderingContext","WebGL2RenderingContext","WebGLActiveInfo","WebGLBuffer","WebGLContextEvent","WebGLFramebuffer","WebGLProgram","WebGLQuery","WebGLRenderbuffer","WebGLRenderingContext","WebGLSampler","WebGLShader","WebGLShaderPrecisionFormat","WebGLSync","WebGLTexture","WebGLTransformFeedback","WebGLUniformLocation","WebGLVertexArrayObject"]);
+        
+        // https://www.w3.org/TR/webaudio
+        names = filterOut(names,["Audio","AudioBuffer","AudioBufferSourceNode","AudioContext","AudioDestinationNode","AudioListener","AudioNode","AudioParam","AudioParamMap","AudioProcessingEvent","AudioScheduledSourceNode","AudioWorklet","AudioWorkletNode","BaseAudioContext"]);
+        
+        // https://encoding.spec.whatwg.org/#dom/textencoder
+        names = filterOut(names,["TextDecoder","TextEncoder","TextDecoderStream","TextEncoderStream"]);
+
+        // https://streams.spec.whatwg.org/#blgs-class
+        names = filterOut(names,["ReadableStream","ReadableStreamDefaultReader","ReadableStreamBYOBReader","ReadableStreamDefaultController","ReadableByteStreamController","ReadableStreamBYOBRequest","WritableStream","WritableStreamDefaultWriter","WritableStreamDefaultController","TransformStream","TransformStreamDefaultController","ByteLengthQueuingStrategy","CountQueuingStrategy"]);
+        names = filterOut(names,["SyncManager"]);
+
+        // https://compat.spec.whatwg.org
+        names = filterOut(names,["HTMLBodyElement"]);
+
+        // https://dom.spec.whatwg.org
+        names = filterOut(names,["CustomEvent","EventTarget","AbortController","AbortSignal","NodeList","HTMLCollection","MutationObserver","MutationRecord","DOMImplementation","XPathResult","XPathExpression","XPathEvaluator","DOMTokenList","DOMRectReadOnly","DOMRectList","DOMRect","DOMQuad","DOMPointReadOnly","DOMPoint","DOMMatrixReadOnly","DOMMatrix","DOMException","DOMError","WebKitMutationObserver","stop","open"
+,"alert","confirm","prompt","print"]);
+        // CSSOM
+        names = filterOut(names,["CSSVariableReferenceValue","CSSUnparsedValue","CSSUnitValue","CSSTranslate","CSSTransformValue","CSSTransformComponent","CSSSupportsRule","CSSStyleValue","CSSStyleSheet","CSSStyleRule","CSSStyleDeclaration","CSSSkewY","CSSSkewX","CSSSkew","CSSScale","CSSRuleList","CSSRule","CSSRotate","CSSPositionValue","CSSPerspective","CSSPageRule","CSSNumericValue","CSSNumericArray","CSSNamespaceRule","CSSMediaRule","CSSMatrixComponent","CSSMathValue","CSSMathSum","CSSMathProduct","CSSMathNegate","CSSMathMin","CSSMathMax","CSSMathInvert","CSSKeywordValue","CSSKeyframesRule","CSSKeyframeRule","CSSImportRule","CSSImageValue","CSSGroupingRule","CSSFontFaceRule","CSS","CSSConditionRule",,"WebKitCSSMatrix","StyleSheetList","StyleSheet","StylePropertyMapReadOnly","StylePropertyMap","screen","innerWidth","innerHeight","scrollX","pageXOffset","scrollY","pageYOffset","screenX","screenY","outerWidth","outerHeight","devicePixelRatio","clientInformation","event","offscreenBuffering","screenLeft","screenTop",
+"scroll","scrollTo","scrollBy","moveTo","moveBy","resizeTo","resizeBy"]);
+        // https://url.spec.whatwg.org
+        names = filterOut(names,["URL","URLSearchParams"]);
+
+        // SVG && Canvas
+        names = filterOut(names,["CanvasCaptureMediaStreamTrack","SVGUnitTypes","SVGTransformList","SVGTransform","SVGStringList","SVGRect","SVGPreserveAspectRatio","SVGPointList","SVGPoint","SVGNumberList","SVGNumber","SVGMatrix","SVGLengthList","SVGLength","SVGAnimatedTransformList","SVGAnimatedString","SVGAnimatedRect","SVGAnimatedPreserveAspectRatio","SVGAnimatedNumberList","SVGAnimatedNumber","SVGAnimatedLengthList","SVGAnimatedLength","SVGAnimatedInteger","SVGAnimatedEnumeration","SVGAnimatedBoolean","SVGAnimatedAngle","SVGAngle"]);
+        
+        // Animation 
+        names = filterOut(names,["AnimationEvent","WebKitAnimationEvent","WebKitTransitionEvent","requestAnimationFrame","cancelAnimationFrame"]);
+        // https://xhr.spec.whatwg.org/#interface-xmlhttprequest
+        names = filterOut(names,["XMLHttpRequest","XMLHttpRequestEventTarget","XMLHttpRequestUpload","FormData","ProgressEvent"]);
+        
+        // USB
+        names = filterOut(names,["USB","USBAlternateInterface","USBConfiguration","USBConnectionEvent","USBDevice","USBEndpoint","USBInterface","USBInTransferResult","USBIsochronousInTransferPacket","USBIsochronousInTransferResult","USBIsochronousOutTransferPacket","USBIsochronousOutTransferResult","USBOutTransferResult"]);
+        // 本地存储
+        names = filterOut(names,["sessionStorage","localStorage","indexedDB"]);
+        // 时间
+        names = filterOut(names,["Date","setTimeout","clearTimeout","setInterval","clearInterval"]);
+        //  其他不知道怎么分了。。。。
+        console.log(names)
+    </script>
+</body>
+</html>
